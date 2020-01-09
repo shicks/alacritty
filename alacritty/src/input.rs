@@ -119,11 +119,8 @@ impl<T: EventListener> Execute<T> for Action {
                 paste(ctx, &text);
             },
             Action::PasteSelection => {
-                // Only paste if mouse events are not captured by an application
-                if !mouse_mode {
-                    let text = ctx.terminal_mut().clipboard().load(ClipboardType::Selection);
-                    paste(ctx, &text);
-                }
+                let text = ctx.terminal_mut().clipboard().load(ClipboardType::Selection);
+                paste(ctx, &text);
             },
             Action::Command(ref program, ref args) => {
                 trace!("Running command {} with args {:?}", program, args);
@@ -396,7 +393,7 @@ impl<'a, T: EventListener, A: ActionContext<T>> Processor<'a, T, A> {
 
                 // Start new empty selection
                 let side = self.ctx.mouse().cell_side;
-                if self.ctx.modifiers().ctrl() {
+                if self.ctx.modifiers().alt() {
                     self.ctx.block_selection(point, side);
                 } else {
                     self.ctx.simple_selection(point, side);
